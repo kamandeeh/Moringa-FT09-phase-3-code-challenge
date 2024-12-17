@@ -1,91 +1,84 @@
-from database.connection import get_db_connection
-from models.author import Author
-from models.magazine import Magazine
-
+from database.connection import get_db_connection  # Import database connection
+from models.author import Author  # Import the Author class
+from models.magazine import Magazine  # Import the Magazine class
 
 class Article:
-    def __init__(self, id=None, author=None, magazine=None, title=None):
-        if not isinstance(author, Author):
-            raise ValueError("Author must be an instance of Author.")
-        if not isinstance(magazine, Magazine):
-            raise ValueError("Magazine must be an instance of Magazine.")
-        if not isinstance(title, str) or len(title) < 5 or len(title) > 50:
-            raise ValueError("Title must be a string between 5 and 50 characters.")
+    def init(self, id, title, content, author_id, magazine_id):
+        self.id = id
+        self.title = title
+        self.content = content
+        self.author_id = author_id
+        self.magazine_id = magazine_id
 
-        self._author = author
-        self._magazine = magazine
-        self._title = title
+def __repr__(self):
+    return f'<Article {self.title}>'
 
-        if id is None:  # Create a new record
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
-                    INSERT INTO articles (title, author_id, magazine_id)
-                    VALUES (?, ?, ?)
-                """, (title, author.id, magazine.id))
-                self._id = cursor.lastrowid
-                conn.commit()
-            finally:
-                conn.close()
-        else:  # Use existing record
-            self._id = id
+@property
+def author(self):
+    """Return the author of the article."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM authors WHERE id = ?', (self.author_id,))
+    author_data = cursor.fetchone()
+    conn.close()
+    if author_data:
+        return Author(author_data['id'], author_data['name'])
+    return None
 
-    @property
-    def id(self):
-        return self._id
+@property
+def magazine(self):
+    """Return the magazine of the article."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM magazines WHERE id = ?', (self.magazine_id,))
+    magazine_data = cursor.fetchone()
+    conn.close()
+    if magazine_data:
+        return Magazine(magazine_data['id'], magazine_data['name'], magazine_data['category'])
+    return None
+    
 
-    @property
-    def title(self):
-        return self._title
 
-    @property
-    def author(self):
-        return self._author
+    # @staticmethod
+    # def get_article_by_id(article_id):
+    #     """Fetch an article by its ID."""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     try:
+    #         cursor.execute("SELECT * FROM articles id = ?", (article_id,))
+    #         row = cursor.fetchone()
+    #         if row:
+    #             author = Author.get_author_by_id(row["author_id"])
+    #             magazine = Magazine.get_magazine_by_id(row["magazine_id"])
+    #             return Article(id=row["id"], author=author, magazine=magazine, title=row["title"])
+    #         return None
+    #     finally:
+    #         conn.close()
 
-    @property
-    def magazine(self):
-        return self._magazine
+    # def update_title(self, new_title):
+    #     """Update the title of the article."""
+    #     if not isinstance(new_title, str) or len(new_title) < 5 or len(new_title) > 50:
+    #         raise ValueError("Title must be a string between 5 and 50 characters.")
 
-    @staticmethod
-    def get_article_by_id(article_id):
-        """Fetch an article by its ID."""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT * FROM articles WHERE id = ?", (article_id,))
-            row = cursor.fetchone()
-            if row:
-                author = Author.get_author_by_id(row["author_id"])
-                magazine = Magazine.get_magazine_by_id(row["magazine_id"])
-                return Article(id=row["id"], author=author, magazine=magazine, title=row["title"])
-            return None
-        finally:
-            conn.close()
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     try:
+    #         cursor.execute("UPDATE articles SET title = ? WHERE id = ?", (new_title, self.id))
+    #         conn.commit()
+    #         self._title = new_title  # Update instance variable
+    #     finally:
+    #         conn.close()
 
-    def update_title(self, new_title):
-        """Update the title of the article."""
-        if not isinstance(new_title, str) or len(new_title) < 5 or len(new_title) > 50:
-            raise ValueError("Title must be a string between 5 and 50 characters.")
+    # def delete_article(self):
+    #     """Delete the article from the database."""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     try:
+    #         cursor.execute("DELETE FROM articles WHERE id = ?", (self.id,))
+    #         conn.commit()
+    #     finally:
+    #         conn.close()
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        try:
-            cursor.execute("UPDATE articles SET title = ? WHERE id = ?", (new_title, self.id))
-            conn.commit()
-            self._title = new_title  # Update instance variable
-        finally:
-            conn.close()
-
-    def delete_article(self):
-        """Delete the article from the database."""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        try:
-            cursor.execute("DELETE FROM articles WHERE id = ?", (self.id,))
-            conn.commit()
-        finally:
-            conn.close()
-
-    def __str__(self):
-        return f"Article(id={self.id}, title='{self.title}', author='{self.author.name}', magazine='{self.magazine.name}')"
+    # def __str__(self):
+    #     return f"Article(id={self.id}, title='{self.title}', author='{self.author.name}', magazine='{self.magazine.name}')"
+    

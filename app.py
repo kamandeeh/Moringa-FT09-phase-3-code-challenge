@@ -85,10 +85,9 @@ def main():
     print("\nArticles:")
     for article in articles:
         # Fetch the Author and Magazine instances
-        author_instance = get_author_by_id(article["author_id"])
-        magazine_instance = get_magazine_by_id(article["magazine_id"])
         article_instance = Article(article["id"], author_instance, magazine_instance, article["title"])
         print(article_instance)
+    return None
 
 if __name__ == "__main__":
     main()

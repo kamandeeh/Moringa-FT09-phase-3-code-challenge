@@ -68,3 +68,4 @@ class Author:
 
     def __str__(self):
         return f"Author(id={self.id}, name='{self.name}')"
+ 
